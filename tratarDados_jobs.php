@@ -7,9 +7,9 @@ echo "Início do script<br>";
 
 // Conexão
 $host = 'localhost';
-$dbname = 'jobs';
+$dbname = 'painel_jobs'; //no computador o nome do banco está como painel_jobs
 $user = 'root';
-$pass = '12345';
+$pass = '';  //no computador não tem senha 12345 o SQL (caso não receba os dados rodar na porta 36ou 37 )
 
 $conn = new mysqli($host, $user, $pass, $dbname);
 

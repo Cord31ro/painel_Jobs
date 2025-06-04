@@ -90,7 +90,7 @@
       };
 
       const gridDiv = document.querySelector('#grid');
-      new agGrid.Grid(gridDiv, gridOptions);
+      agGrid.createGrid(gridDiv, gridOptions);
 
       fetch('src/tratarDados_jobs.php')
         .then(response => response.json())

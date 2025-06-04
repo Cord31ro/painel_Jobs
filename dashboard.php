@@ -6,10 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard de Jobs</title>
 
-  <!-- Ag Grid Estilos -->
+  <!-- Ag Grid Estilos atualizados-->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css">
-
   <style>
     html,
     body {
@@ -63,8 +62,8 @@
     <div id="chartSistema" style="width: 45%; height: 400px;"></div>
   </div>
 
-  <!-- Ag Grid Script -->
-  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+  <!-- Ag Grid Script atualizado com versão global exposta -->
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
   <!-- Ag Charts Script -->
   <script src="https://cdn.jsdelivr.net/npm/ag-charts-community/dist/ag-charts-community.min.js"></script>
 

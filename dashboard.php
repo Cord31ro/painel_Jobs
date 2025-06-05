@@ -7,8 +7,8 @@
   <title>Dashboard de Jobs</title>
 
   <!-- Ag Grid Estilos atualizados-->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-quartz.css">
+
   <style>
     html,
     body {
@@ -17,7 +17,7 @@
       font-family: Arial, sans-serif;
     }
 
-    .ag-theme-alpine {
+    .ag-theme-quartz {
       height: 80vh;
       width: 100%;
     }
@@ -54,7 +54,7 @@
     </div>
   </header>
 
-  <div id="grid" class="ag-theme-alpine"></div>
+  <div id="grid" class="ag-theme-quartz"></div>
 
   <!-- Inclusão dos gráficos -->
   <div style="display: flex; flex-wrap: wrap; justify-content: space-around; margin-top: 30px;">
@@ -65,7 +65,8 @@
   <!-- Ag Grid Script atualizado com versão global exposta -->
   <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
   <!-- Ag Charts Script -->
-  <script src="https://cdn.jsdelivr.net/npm/ag-charts-community/dist/ag-charts-community.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-community@9.1.1/dist/ag-charts-community.min.js"></script>
+
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -78,95 +79,101 @@
         { headerName: 'Sistema Origem', field: 'sistema_origem', sortable: true, filter: true },
       ];
 
-      const gridOptions = {
-        columnDefs: columnDefs,
-        defaultColDef: {
-          flex: 1,
-          minWidth: 100,
-          resizable: true,
-        },
-        animateRows: true,
-        rowData: null
-      };
+    const gridOptions = {
+      columnDefs: columnDefs,
+      defaultColDef: {
+        flex: 1,
+        minWidth: 100,
+        resizable: true,
+      },
+      animateRows: true,
+      rowData: null,
 
-      const gridDiv = document.querySelector('#grid');
-      agGrid.createGrid(gridDiv, gridOptions);
-
-      fetch('src/tratarDados_jobs.php')
+      // Para garantir que o grid está pronto
+      onGridReady: function (params) {
+        fetch('tratarDados_jobs.php')
         .then(response => response.json())
-        .then(data => {
-          gridOptions.api.setRowData(data);
+        .then(data =>{
+          console.log("Dados recebidos:", data)
+          params.api.applyTransaction( { replace: data });  
 
-          // Gráfico de pizza - Distribuição por status
-          const statusContagem = {};
-          data.forEach(job => {
-            statusContagem[job.status] = (statusContagem[job.status] || 0) + 1;
-          });
+        //gráfico de pizza
+        const statusContagem = {};
+        data.forEach(job => {
+          statusContagem[job.status] = (statusContagem[job.status] || 0) + 1;
+        });
 
-          const statusChartData = Object.entries(statusContagem).map(([status, count]) => ({
-            status,
-            count
-          }));
+        //define a variável que será usada no gráfico
+        const statusChartData = Object.entries(statusContagem).map(([status, count]) => ({
+          status,
+          count
+        }));
 
-          agCharts.AgChart.create({
-            container: document.getElementById("chartStatus"),
-            data: statusChartData,
-            series: [{
-              type: 'pie',
-              angleKey: 'count',
-              labelKey: 'status'
-            }],
-            title: {
-              text: 'Distribuição de Jobs por Status',
-              fontSize: 18
-            }
-          });
 
-          // Gráfico de barras - Duração média por sistema de origem
-          const sistemas = {};
-          data.forEach(job => {
-            const sistema = job.sistema_origem;
-            if (!sistemas[sistema]) {
-              sistemas[sistema] = { total: 0, count: 0 };
-            }
-            sistemas[sistema].total += parseInt(job.duracao_segundos);
-            sistemas[sistema].count++;
-          });
+          AgChart.create({
+          container: document.getElementById("chartStatus"),
+          data: statusChartData,
+          series: [{
+            type: 'pie',
+            angleKey: 'count',
+            labelKey: 'status'
+          }],
+          title: {
+            text: 'Distribuição de Jobs por Status',
+            fontSize: 18
+          }
+        });
 
-          const sistemaChartData = Object.entries(sistemas).map(([sistema, info]) => ({
-            sistema,
-            media: info.total / info.count
-          }));
+        // Gráfico de barras - Duração média por sistema de origem
+        const sistemas = {};
+        data.forEach(job => {
+          const sistema = job.sistema_origem;
+          if (!sistemas[sistema]) {
+            sistemas[sistema] = { total: 0, count: 0 };
+          }
+          sistemas[sistema].total += parseInt(job.duracao_segundos);
+          sistemas[sistema].count++;
+        });
 
-          agCharts.AgChart.create({
-            container: document.getElementById('chartSistema'),
-            data: sistemaChartData,
-            series: [{
-              type: 'bar',
-              xKey: 'sistema',
-              yKey: 'media'
-            }],
-            title: {
-              text: 'Duração Média por Sistema de Origem',
-              fontSize: 17
+        const sistemaChartData = Object.entries(sistemas).map(([sistema, info]) => ({
+          sistema,
+          media: info.total / info.count
+        }));
+
+        agCharts.AgChart.create({
+          container: document.getElementById('chartSistema'),
+          data: sistemaChartData,
+          series: [{
+            type: 'bar',
+            xKey: 'sistema',
+            yKey: 'media'
+          }],
+          title: {
+            text: 'Duração Média por Sistema de Origem',
+            fontSize: 17
+          },
+          axes: [
+            {
+              type: 'category',
+              position: 'bottom',
+              title: { text: 'Sistema de Origem' }
             },
-            axes: [
-              {
-                type: 'category',
-                position: 'bottom',
-                title: { text: 'Sistema de Origem' }
-              },
-              {
-                type: 'number',
-                position: 'left',
-                title: { text: 'Duração Média (s)' }
-              }
-            ]
-          });
+            {
+              type: 'number',
+              position: 'left',
+              title: { text: 'Duração Média (s)' }
+            }
+          ]
+
+        });
 
         })
-        .catch(error => console.error('Erro ao carregar dado', error));
-    });
+        .catch(error => console.error('Erro ao carregar dados', error));
+      }
+    };
+          const gridDiv = document.querySelector('#grid');
+          agGrid.createGrid(gridDiv, gridOptions);
+  });
   </script>
 
 </body>

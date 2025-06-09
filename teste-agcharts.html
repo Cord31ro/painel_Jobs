@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Teste AG Charts</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #chart {
+      width: 600px;
+      height: 400px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Teste de Gráfico com AG Charts</h1>
+  <div id="chart"></div>
+
+  <!-- Ag Charts (versão com suporte ao objeto global AgCharts) -->
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-community@11.1.0/dist/ag-charts-community.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Dados de exemplo
+      const dados = [
+        { categoria: 'Sucesso', valor: 10 },
+        { categoria: 'Erro', valor: 4 },
+        { categoria: 'Pendente', valor: 6 }
+      ];
+
+      // Gráfico de pizza
+      AgCharts.create({
+        container: document.getElementById('chart'),
+        data: dados,
+        series: [{
+          type: 'pie',
+          angleKey: 'valor',
+          labelKey: 'categoria'
+        }],
+        title: {
+          text: 'Distribuição de Jobs',
+          fontSize: 18
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
